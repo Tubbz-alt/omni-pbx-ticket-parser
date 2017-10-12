@@ -1,2 +1,3 @@
-tickets/
+tickets/*
+!tickets
 .git

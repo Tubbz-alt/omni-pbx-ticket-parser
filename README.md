@@ -4,9 +4,11 @@ this is a nodejs ES6 implementation to receive and parse VoIP tickets. it's a cr
 
 ## usage
 
+make sure the `tickets` directory exists, then run the following command with the `PBX_IP` adapted to your environment
+
 ```PBX_IP=10.124.10.1 node receiver.js```
 
-will receive the tickets and dump them to the ticket folder
+this script will receive the tickets and dump them to the tickets folder
 
 ```node reader.js```
 
@@ -19,8 +21,8 @@ will print the stats about all the tickets in the tickets folder
 End of communication      :  2017-10-12T15:42:42.000Z
 Protocol Version          :  1
 Equipment type            :  CplOmEnt
-Local IP address          :  172.20.1.65
-Remote IP address         :  10.124.0.70
+Local IP address          :  172.xx.xx.xx
+Remote IP address         :  10.yyy.y.yy
 Call Duration             :  14
 Algo Compression Type     :  G711A
 RTP Lost Packets NB       :  0
