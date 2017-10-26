@@ -11,7 +11,23 @@ let parsers = {
   },
   'ip': x => x.join("."), //only v4
   'algo': x => ["G711A", "G711U", "G723", "G729"][x.readIntBE(0,1)],
-  'hex': x => x.toString('hex')
+  'hex': x => x.toString('hex'),
+  'identifier': x => {
+    let ret = ""
+    for(let y=0;y<x.length;y++)
+      ret+=x.readIntBE(y, 1)
+    return ret
+  },
+  'groups': (x, count) => {
+    let tokens = []
+    let len = x.length / count
+    //console.log("count", count, "len", len)
+    for(let y=0;y<count;y++) {
+      tokens.push(x.readIntBE(y*len, len))
+      //tokens.push(x.slice(y*len, y*len+len).toString('hex'))
+    }
+    return "[" + tokens.join(",") + "]"
+  }
 }
 
 function parseTicket(buffer, ticketName) {
@@ -36,26 +52,57 @@ function parseTicket(buffer, ticketName) {
       'name': 'Remote IP address',
       'parser': parsers.ip
     },
+    '10': {
+      'name': 'Local ID',
+      'parser': parsers.identifier
+    },
+    '11': {
+      'name': 'Distant ID',
+      'parser': parsers.identifier
+    },
     '12': {
       'name': 'Call Duration',
+    },
+    '13': {
+      'name': 'Local SSRC',
+      'parser': parsers.hex
+    },
+    '14': {
+      'name': 'Distant SSRC',
+      'parser': parsers.hex
     },
     '15': {
       'name': 'Algo Compression Type',
       'parser': parsers.algo
+    },
+    '22': {
+      'name': 'RTP Received Packets NB'
+    },
+    '23': {
+      'name': 'Total RTP Packets Sent'
     },
     '24': {
       'name': 'RTP Lost Packets NB'
     },
     '27': {
       'name': 'Delay',
-      'parser': parsers.hex
+      'parser': x => parsers.groups(x,5)
     },
     '28': {
       'name': 'Max Delay'
     },
     '32': {
       'name': 'Jitter Depth',
-      'parser': parsers.hex
+      'parser': x => parsers.groups(x,10)
+    },
+    '33': {
+      'name': 'ICMP Packet Loss'
+    },
+    '39': {
+      'name': 'Terminal MCDU'
+    },
+    '40': {
+      'name': 'Network Number'
     },
     '45': {
       'name': 'Min Delay'
@@ -92,11 +139,20 @@ function parseTicket(buffer, ticketName) {
     i+=length+3
   }
 
-  console.log("====", ticketName, "====")
+  let output = "====" + ticketName + "====\n"
   for (let [key, obj] of Object.entries(datastruct)) {
-     if(obj.value != undefined) console.log(obj.name.padEnd(25), ": ", obj.value)
+     if(obj.value != undefined) output+=obj.name.padEnd(25) + ": " + obj.value + "\n"
   }
-  console.log()
+  output+="\n"
+  console.log(output)
+  return
+  // filter stuff
+  // equipment not IPP and callduration > 10sec?
+  //if( datastruct[12].value > 10) { //datastruct[6].value!="IPP" &&
+  // Filter for only CplOmEnt devices
+  //if(datastruct[6].value == "CplOmEnt") {
+  //  console.log(output)
+  //}
 
 }
 

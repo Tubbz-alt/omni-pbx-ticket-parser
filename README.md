@@ -17,17 +17,22 @@ will print the stats about all the tickets in the tickets folder
 ## example output
 
 ```
-==== ticket_2017-10-12T13:42:42.889Z.data ====
-End of communication      :  2017-10-12T15:42:42.000Z
-Protocol Version          :  1
-Equipment type            :  CplOmEnt
-Local IP address          :  172.xx.xx.xx
-Remote IP address         :  10.yyy.y.yy
-Call Duration             :  14
-Algo Compression Type     :  G711A
-RTP Lost Packets NB       :  0
-Delay                     :  00020000000000000000
-Max Delay                 :  13
-Jitter Depth              :  000002c3000002c30000000000000000000000000000000000000000000000000000000000000000
-Min Delay                 :  11
+====ticket_2017-10-17T10:37:45.177Z.data====
+End of communication     : Tue Oct 17 2017 14:37:45 GMT+0200 (CEST)
+Protocol Version         : 1
+Equipment type           : CplOmEnt
+Local IP address         : 172.x.x.x
+Remote IP address        : 10.x.x.x
+Local ID                 : xxxxxxxxxxx000000000000000000000
+Distant ID               : yyyyy000000000000000000000000000
+Call Duration            : 2
+Local SSRC               : f0955582
+Distant SSRC             : 4b5bf221
+Algo Compression Type    : G711A
+RTP Received Packets NB  : 133
+Total RTP Packets Sent   : 140
+RTP Lost Packets NB      : 0
+Jitter Depth             : [130,131,0,0,0,0,0,0,0,0]
+ICMP Packet Loss         : 0
+Network Number           : 1
 ```
