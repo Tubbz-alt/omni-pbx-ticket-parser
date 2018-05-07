@@ -30,6 +30,23 @@ let parsers = {
   }
 }
 
+function printTicket(nr, ticketName, datastruct) {
+  let output = "====" + nr + "_" + ticketName + "====\n"
+  for (let [key, obj] of Object.entries(datastruct)) {
+      if(obj.value != undefined) output+=obj.name.padEnd(25) + ": " + obj.value + "\n"
+  }
+  output+="\n"
+  console.log(output)
+  return
+  // filter stuff
+  // equipment not IPP and callduration > 10sec?
+  //if( datastruct[12].value > 10) { //datastruct[6].value!="IPP" &&
+  // Filter for only CplOmEnt devices
+  //if(datastruct[6].value == "CplOmEnt") {
+  //  console.log(output)
+  //}
+}
+
 function parseTicket(buffer, ticketName) {
 
   let datastruct = {
@@ -117,13 +134,31 @@ function parseTicket(buffer, ticketName) {
     }
   }
 
+
   var l = buffer.length
-  var i = 4 // skip header
+  var i = 0 // skip header (4)
+  var tCount = 0
+  var fieldCounter = 0
+  let field
 
   while(i < l-3) {
     //console.log(i, "<", l, i < l)
-    let field = buffer.readInt8(i)
+    try {
+      field = buffer.readInt8(i)
+    } catch (err) {
+      console.log("catch", "range", i, l)
+    }
     let length = buffer.readInt16BE(i+1)
+    if(length < 0 || length > 10000) {
+      console.log("fishy length", length, "at field", field)
+      printTicket(tCount, ticketName, datastruct)
+      return // 01 02 - 01 00 04 59
+    }
+    if (field == 1 && fieldCounter > 5) {
+      printTicket(++tCount, ticketName, datastruct)
+      fieldCounter = 0
+    }
+    fieldCounter++
     if (length > 0) {
       if (field in datastruct) {
         let payload = buffer.slice(i+3, i+3+length)
@@ -132,28 +167,14 @@ function parseTicket(buffer, ticketName) {
         } else {
           datastruct[field].value = parsers.default(payload)
         }
+        //console.log("field", field, "value", datastruct[field].value)
       } else {
         //console.log("field", field, "not found")
       }
     }
     i+=length+3
   }
-
-  let output = "====" + ticketName + "====\n"
-  for (let [key, obj] of Object.entries(datastruct)) {
-     if(obj.value != undefined) output+=obj.name.padEnd(25) + ": " + obj.value + "\n"
-  }
-  output+="\n"
-  console.log(output)
-  return
-  // filter stuff
-  // equipment not IPP and callduration > 10sec?
-  //if( datastruct[12].value > 10) { //datastruct[6].value!="IPP" &&
-  // Filter for only CplOmEnt devices
-  //if(datastruct[6].value == "CplOmEnt") {
-  //  console.log(output)
-  //}
-
+  printTicket(tCount, ticketName, datastruct)
 }
 
 files = fs.readdirSync("./tickets")

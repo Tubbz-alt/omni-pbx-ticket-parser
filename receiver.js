@@ -31,16 +31,16 @@ datahandler = function(socket, data) {
   } else if (compare(data, TEST_REQ)) {
     console.log("got keep alive")
     socket.write(TEST_RSP)
-  } else if (data.length == 772 || data.length == 774) {
+  } else if (data.length > 772 ) { // || data.length == 774
     if(TICKET_START.compare(data, 0, TICKET_START.length) == 0) {
-      filename = "./tickets/ticket_" + (new Date()).toISOString() + '.data'
+      filename = "./tickets/ticket_s" + data.length + "_" + (new Date()).toISOString() + '.data'
       console.log("got ticket, writing file", filename)
       fs.writeFile(filename, data, e => {
         if (e)
           console.log("problem writing file", filename, e)
       })
     } else {
-      //console.log("fake ticket")
+      console.log("fake ticket?")
     }
     socket.write(TICKET_OK)
   } else if (compare(data, IGNORE)) {
